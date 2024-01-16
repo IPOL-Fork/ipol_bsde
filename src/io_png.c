@@ -68,7 +68,8 @@ static char io_png_tag[] = "using io_png " IO_PNG_VERSION;
  *
  * @return a pointer to a version info string
  */
-char *io_png_info(void) {
+char *io_png_info(void)
+{
     return io_png_tag;
 }
 
@@ -87,7 +88,8 @@ char *io_png_info(void) {
  */
 static void *io_png_read_abort(FILE * fp,
                                png_structp * png_ptr_p,
-                               png_infop * info_ptr_p) {
+                               png_infop * info_ptr_p)
+{
     png_destroy_read_struct(png_ptr_p, info_ptr_p, NULL);
     if (NULL != fp && stdin != fp)
         (void) fclose(fp);
@@ -110,7 +112,8 @@ static void *io_png_read_abort(FILE * fp,
  */
 static void *io_png_read_raw(const char *fname,
                              size_t * nxp, size_t * nyp, size_t * ncp,
-                             int png_transform, int dtype) {
+                             int png_transform, int dtype)
+{
     png_byte png_sig[PNG_SIG_LEN];
     png_structp png_ptr;
     png_infop info_ptr;
@@ -192,19 +195,23 @@ static void *io_png_read_raw(const char *fname,
      * this generic loop also works for one single channel
      */
     size = *nxp * *nyp * *ncp;
-    switch (dtype) {
+    switch (dtype)
+    {
     case IO_PNG_U8:
         if (NULL == (data_u8 =
                          (unsigned char *) malloc(size * sizeof(unsigned char))))
             return io_png_read_abort(fp, &png_ptr, &info_ptr);
         data = (void *) data_u8;
-        for (k = 0; k < *ncp; k++) {
+        for (k = 0; k < *ncp; k++)
+        {
             /* channel loop */
             data_u8_ptr = data_u8 + (size_t) (*nxp * *nyp * k);
-            for (j = 0; j < *nyp; j++) {
+            for (j = 0; j < *nyp; j++)
+            {
                 /* row loop */
                 row_ptr = row_pointers[j] + k;
-                for (i = 0; i < *nxp; i++) {
+                for (i = 0; i < *nxp; i++)
+                {
                     /* pixel loop */
                     *data_u8_ptr++ = (unsigned char) *row_ptr;
                     row_ptr += *ncp;
@@ -216,13 +223,16 @@ static void *io_png_read_raw(const char *fname,
         if (NULL == (data_f32 = (float *) malloc(size * sizeof(float))))
             return io_png_read_abort(fp, &png_ptr, &info_ptr);
         data = (void *) data_f32;
-        for (k = 0; k < *ncp; k++) {
+        for (k = 0; k < *ncp; k++)
+        {
             /* channel loop */
             data_f32_ptr = data_f32 + (size_t) (*nxp * *nyp * k);
-            for (j = 0; j < *nyp; j++) {
+            for (j = 0; j < *nyp; j++)
+            {
                 /* row loop */
                 row_ptr = row_pointers[j] + k;
-                for (i = 0; i < *nxp; i++) {
+                for (i = 0; i < *nxp; i++)
+                {
                     /* pixel loop */
                     *data_f32_ptr++ = (float) *row_ptr;
                     row_ptr += *ncp;
@@ -254,7 +264,8 @@ static void *io_png_read_raw(const char *fname,
  *         or NULL if an error happens
  */
 unsigned char *io_png_read_u8(const char *fname,
-                              size_t * nxp, size_t * nyp, size_t * ncp) {
+                              size_t * nxp, size_t * nyp, size_t * ncp)
+{
     /* read the image as unsigned char */
     return (unsigned char *) io_png_read_raw(fname, nxp, nyp, ncp,
             PNG_TRANSFORM_IDENTITY,
@@ -267,7 +278,8 @@ unsigned char *io_png_read_u8(const char *fname,
  * See io_png_read_u8() for details.
  */
 unsigned char *io_png_read_u8_rgb(const char *fname, size_t * nxp,
-                                  size_t * nyp) {
+                                  size_t * nyp)
+{
     size_t nc;
     unsigned char *img;
 
@@ -281,7 +293,8 @@ unsigned char *io_png_read_u8_rgb(const char *fname, size_t * nxp,
     if (3 == nc)
         /* already RGB */
         return img;
-    else {
+    else
+    {
         /* convert to RGB */
         size_t i, size;
         unsigned char *img_r, *img_g, *img_b;
@@ -295,7 +308,8 @@ unsigned char *io_png_read_u8_rgb(const char *fname, size_t * nxp,
         img_b = img + 2 * size;
 
         /* gray->RGB conversion */
-        for (i = 0; i < size; i++) {
+        for (i = 0; i < size; i++)
+        {
             img_g[i] = img_r[i];
             img_b[i] = img_r[i];
         }
@@ -309,7 +323,8 @@ unsigned char *io_png_read_u8_rgb(const char *fname, size_t * nxp,
  * See io_png_read_u8() for details.
  */
 unsigned char *io_png_read_u8_gray(const char *fname,
-                                   size_t * nxp, size_t * nyp) {
+                                   size_t * nxp, size_t * nyp)
+{
     size_t nc;
     unsigned char *img;
 
@@ -323,7 +338,8 @@ unsigned char *io_png_read_u8_gray(const char *fname,
     if (1 == nc)
         /* already gray */
         return img;
-    else {
+    else
+    {
         /* convert to gray */
         size_t i, size;
         unsigned char *img_r, *img_g, *img_b;
@@ -363,7 +379,8 @@ unsigned char *io_png_read_u8_gray(const char *fname,
  *         or NULL if an error happens
  */
 float *io_png_read_f32(const char *fname,
-                       size_t * nxp, size_t * nyp, size_t * ncp) {
+                       size_t * nxp, size_t * nyp, size_t * ncp)
+{
     /* read the image as float */
     return (float *) io_png_read_raw(fname, nxp, nyp, ncp,
                                      PNG_TRANSFORM_IDENTITY, IO_PNG_F32);
@@ -374,7 +391,8 @@ float *io_png_read_f32(const char *fname,
  *
  * See io_png_read_f32() for details.
  */
-float *io_png_read_f32_rgb(const char *fname, size_t * nxp, size_t * nyp) {
+float *io_png_read_f32_rgb(const char *fname, size_t * nxp, size_t * nyp)
+{
     size_t nc;
     float *img;
 
@@ -387,7 +405,8 @@ float *io_png_read_f32_rgb(const char *fname, size_t * nxp, size_t * nyp) {
     if (3 == nc)
         /* already RGB */
         return img;
-    else {
+    else
+    {
         /* convert to RGB */
         size_t i, size;
         float *img_r, *img_g, *img_b;
@@ -400,7 +419,8 @@ float *io_png_read_f32_rgb(const char *fname, size_t * nxp, size_t * nyp) {
         img_b = img + 2 * size;
 
         /* gray->RGB conversion */
-        for (i = 0; i < size; i++) {
+        for (i = 0; i < size; i++)
+        {
             img_g[i] = img_r[i];
             img_b[i] = img_r[i];
         }
@@ -413,7 +433,8 @@ float *io_png_read_f32_rgb(const char *fname, size_t * nxp, size_t * nyp) {
  *
  * See io_png_read_f32() for details.
  */
-float *io_png_read_f32_gray(const char *fname, size_t * nxp, size_t * nyp) {
+float *io_png_read_f32_gray(const char *fname, size_t * nxp, size_t * nyp)
+{
     size_t nc;
     float *img;
 
@@ -426,7 +447,8 @@ float *io_png_read_f32_gray(const char *fname, size_t * nxp, size_t * nyp) {
     if (1 == nc)
         /* already gray */
         return img;
-    else {
+    else
+    {
         /* convert to gray */
         size_t i, size;
         float *img_r, *img_g, *img_b;
@@ -465,7 +487,8 @@ float *io_png_read_f32_gray(const char *fname, size_t * nxp, size_t * nyp) {
  */
 static int io_png_write_abort(FILE * fp,
                               png_byte * idata, png_bytep * row_pointers,
-                              png_structp * png_ptr_p, png_infop * info_ptr_p) {
+                              png_structp * png_ptr_p, png_infop * info_ptr_p)
+{
     png_destroy_write_struct(png_ptr_p, info_ptr_p);
     if (NULL != row_pointers)
         free(row_pointers);
@@ -492,7 +515,8 @@ static int io_png_write_abort(FILE * fp,
  * @return 0 if everything OK, -1 if an error occured
  */
 static int io_png_write_raw(const char *fname, const void *data,
-                            size_t nx, size_t ny, size_t nc, int dtype) {
+                            size_t nx, size_t ny, size_t nc, int dtype)
+{
     png_structp png_ptr;
     png_infop info_ptr;
     png_byte *idata = NULL, *idata_ptr = NULL;
@@ -554,7 +578,8 @@ static int io_png_write_raw(const char *fname, const void *data,
 
     /* set image informations */
     bit_depth = 8;
-    switch (nc) {
+    switch (nc)
+    {
     case 1:
         color_type = PNG_COLOR_TYPE_GRAY;
         break;
@@ -589,16 +614,20 @@ static int io_png_write_raw(const char *fname, const void *data,
      * the image is interlaced layer after layer
      * this involves more memory exchange, but allows a generic loop
      */
-    switch (dtype) {
+    switch (dtype)
+    {
     case IO_PNG_U8:
         data_u8 = (unsigned char *) data;
-        for (k = 0; k < nc; k++) {
+        for (k = 0; k < nc; k++)
+        {
             /* channel loop */
             data_u8_ptr = data_u8 + (size_t) (nx * ny * k);
             idata_ptr = idata + (size_t) k;
-            for (j = 0; j < ny; j++) {
+            for (j = 0; j < ny; j++)
+            {
                 /* row loop */
-                for (i = 0; i < nx; i++) {
+                for (i = 0; i < nx; i++)
+                {
                     /* pixel loop */
                     *idata_ptr = (png_byte) * data_u8_ptr++;
                     idata_ptr += nc;
@@ -608,13 +637,16 @@ static int io_png_write_raw(const char *fname, const void *data,
         break;
     case IO_PNG_F32:
         data_f32 = (float *) data;
-        for (k = 0; k < nc; k++) {
+        for (k = 0; k < nc; k++)
+        {
             /* channel loop */
             data_f32_ptr = data_f32 + (size_t) (nx * ny * k);
             idata_ptr = idata + (size_t) k;
-            for (j = 0; j < ny; j++) {
+            for (j = 0; j < ny; j++)
+            {
                 /* row loop */
-                for (i = 0; i < nx; i++) {
+                for (i = 0; i < nx; i++)
+                {
                     /* pixel loop */
                     tmp = floor(*data_f32_ptr++ + .5);
                     *idata_ptr = (png_byte) (tmp < 0. ? 0. :
@@ -649,7 +681,8 @@ static int io_png_write_raw(const char *fname, const void *data,
  * @return 0 if everything OK, -1 if an error occured
  */
 int io_png_write_u8(const char *fname, const unsigned char *data,
-                    size_t nx, size_t ny, size_t nc) {
+                    size_t nx, size_t ny, size_t nc)
+{
     return io_png_write_raw(fname, (void *) data,
                             (png_uint_32) nx, (png_uint_32) ny, (png_byte) nc,
                             IO_PNG_U8);
@@ -668,7 +701,8 @@ int io_png_write_u8(const char *fname, const unsigned char *data,
  * @return 0 if everything OK, -1 if an error occured
  */
 int io_png_write_f32(const char *fname, const float *data,
-                     size_t nx, size_t ny, size_t nc) {
+                     size_t nx, size_t ny, size_t nc)
+{
     return io_png_write_raw(fname, (void *) data,
                             (png_uint_32) nx, (png_uint_32) ny, (png_byte) nc,
                             IO_PNG_F32);
